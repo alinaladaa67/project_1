@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система управления заданиями и специалистами</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #0d6efd;
+            color: white;
+            font-weight: bold;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: none;
+        }
+        .card-header {
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: bold;
+        }
+        .btn-custom {
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+        .btn-custom:hover {
+            background-color: #0b5ed7;
+            color: white;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .status-new {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .status-inwork {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-done {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-canceled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status-closed {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        .specialist-card {
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+        }
+        .specialist-card:hover {
+            transform: translateY(-5px);
+            border-color: #0d6efd;
+        }
+        .rating {
+            color: #ffc107;
+        }
+        .form-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .template-list {
+            cursor: pointer;
+            padding: 10px;
+            border-left: 4px solid #0d6efd;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .template-list:hover {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center mb-4 text-primary">
+                    <i class="bi bi-kanban"></i> Система управления заданиями и специалистами
+                </h1>
+                
+                <!-- Навигация по ролям -->
+                <ul class="nav nav-tabs justify-content-center mb-4" id="roleTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="office-tab" data-bs-toggle="tab" data-bs-target="#office" type="button" role="tab">
+                            <i class="bi bi-building"></i> Управляющий офисом
+                            <span class="notification-badge">3</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="shop-tab" data-bs-toggle="tab" data-bs-target="#shop" type="button" role="tab">
+                            <i class="bi bi-shop"></i> Управляющий магазином
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="hr-tab" data-bs-toggle="tab" data-bs-target="#hr" type="button" role="tab">
+                            <i class="bi bi-people"></i> Специалист HR
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Содержимое вкладок -->
+                <div class="tab-content" id="roleTabContent">
+                    
+                    <!-- Вкладка Управляющий офисом -->
+                    <div class="tab-pane fade show active" id="office" role="tabpanel">
+                        <div class="row">
+                            <!-- Уведомления -->
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span><i class="bi bi-bell"></i> Уведомления</span>
+                                        <span class="badge bg-danger">3 новых</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info">
+                                            <strong>Новое задание #245</strong><br>
+                                            Магазин "Центральный"<br>
+                                            <small>10 минут назад</small>
+                                        </div>
+                                        <div class="alert alert-info">
+                                            <strong>Новое задание #246</strong><br>
+                                            Магазин "Северный"<br>
+                                            <small>25 минут назад</small>
+                                        </div>
+                                        <div class="alert alert-warning">
+                                            <strong>Заявка на подбор</strong><br>
+                                            Требуется сантехник<br>
+                                            <small>2 часа назад</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Список заданий -->
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span><i class="bi bi-list-task"></i> Задания</span>
+                                        <div>
+                                            <select class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                                                <option>Все статусы</option>
+                                                <option>Новый</option>
+                                                <option>В работе</option>
+                                                <option>Выполнен</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Название</th>
+                                                        <th>Магазин</th>
+                                                        <th>Статус</th>
+                                                        <th>Дата</th>
+                                                        <th>Действия</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>#245</td>
+                                                        <td>Ремонт холодильника</td>
+                                                        <td>Центральный</td>
+                                                        <td><span class="status-badge status-new">новый</span></td>
+                                                        <td>12.05.2023</td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-outline-primary">Назначить</button>
+                                                            <button class="btn btn-sm btn-outline-success">В работу</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>#244</td>
+                                                        <td>Установка кондиционера</td>
+                                                        <td>Северный</td>
+                                                        <td><span class="status-badge status-inwork">в работе</span></td>
+                                                        <td>11.05.2023</td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-outline-success">Выполнено</button>
+                                                            <button class="btn btn-sm btn-outline-secondary">Закрыть</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>#243</td>
+                                                        <td>Замена проводки</td>
+                                                        <td>Южный</td>
+                                                        <td><span class="status-badge status-done">выполнен</span></td>
+                                                        <td>10.05.2023</td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-custom">Закрыть задание</button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Поиск специалистов -->
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <i class="bi bi-search"></i> Поиск специалистов
+                                        <button class="btn btn-sm btn-custom float-end" data-bs-toggle="modal" data-bs-target="#recruitmentModal">
+                                            <i class="bi bi-plus-circle"></i> Создать заявку на подбор
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Фильтры -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Специализация</label>
+                                                <select class="form-select">
+                                                    <option selected>Все</option>
+                                                    <option>Электрик</option>
+                                                    <option>Сантехник</option>
+                                                    <option>Мастер HVAC</option>
+                                                    <option>Уборщик</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Рейтинг</label>
+                                                <select class="form-select">
+                                                    <option selected>Любой</option>
+                                                    <option>4+</option>
+                                                    <option>4.5+</option>
+                                                    <option>5</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Доступность</label>
+                                                <select class="form-select">
+                                                    <option selected>Свободен</option>
+                                                    <option>Занят</option>
+                                                    <option>В отпуске</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Список специалистов -->
+                                        <div class="row" id="specialistsList">
+                                            <div class="col-md-4">
+                                                <div class="card specialist-card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">Иванов А.С.</h5>
+                                                        <p class="card-text">
+                                                            <strong>Специализация:</strong> Электрик<br>
+                                                            <strong>Рейтинг:</strong> 
+                                                            <span class="rating">
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star-half"></i>
+                                                                4.5
+                                                            </span><br>
+                                                            <strong>Контакты:</strong> +7 999 123-45-67<br>
+                                                            <strong>Статус:</strong> <span class="text-success">Свободен</span>
+                                                        </p>
+                                                        <button class="btn btn-custom btn-sm">Назначить</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card specialist-card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">Петров В.И.</h5>
+                                                        <p class="card-text">
+                                                            <strong>Специализация:</strong> Сантехник<br>
+                                                            <strong>Рейтинг:</strong> 
+                                                            <span class="rating">
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star-fill"></i>
+                                                                5.0
+                                                            </span><br>
+                                                            <strong>Контакты:</strong> +7 999 765-43-21<br>
+                                                            <strong>Статус:</strong> <span class="text-warning">Занят до 15.05</span>
+                                                        </p>
+                                                        <button class="btn btn-outline-secondary btn-sm" disabled>Недоступен</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card specialist-card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">Сидорова М.К.</h5>
+                                                        <p class="card-text">
+                                                            <strong>Специализация:</strong> Мастер HVAC<br>
+                                                            <strong>Рейтинг:</strong> 
+                                                            <span class="rating">
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star-fill"></i>
+                                                                <i class="bi bi-star"></i>
+                                                                4.0
+                                                            </span><br>
+                                                            <strong>Контакты:</strong> +7 999 555-33-11<br>
+                                                            <strong>Статус:</strong> <span class="text-success">Свободен</span>
+                                                        </p>
+                                                        <button class="btn btn-custom btn-sm">Назначить</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Вкладка Управляющий магазином -->
+                    <div class="tab-pane fade" id="shop" role="tabpanel">
+                        <div class="row">
+                            <!-- Создание задания -->
+                            <div class="col-md-6">
+                                <div class="form-section">
+                                    <h4><i class="bi bi-plus-circle"></i> Создание задания</h4>
+                                    <div class="mb-3">
+                                        <label class="form-label">Шаблон задания</label>
+                                        <div class="template-list" onclick="selectTemplate('Ремонт холодильника')">
+                                            <strong>Ремонт холодильника</strong><br>
+                                            <small>Стандартный ремонт холодильного оборудования</small>
+                                        </div>
+                                        <div class="template-list" onclick="selectTemplate('Чистка кондиционера')">
+                                            <strong>Чистка кондиционера</strong><br>
+                                            <small>Обслуживание сплит-систем</small>
+                                        </div>
+                                        <div class="template-list" onclick="selectTemplate('Замена проводки')">
+                                            <strong>Замена проводки</strong><br>
+                                            <small>Полная замена электропроводки в помещении</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Название задания</label>
+                                        <input type="text" class="form-control" id="taskTitle" placeholder="Введите название">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Описание работ</label>
+                                        <textarea class="form-control" id="taskDescription" rows="4" placeholder="Подробное описание необходимых работ"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Приоритет</label>
+                                        <select class="form-select">
+                                            <option>Низкий</option>
+                                            <option selected>Средний</option>
+                                            <option>Высокий</option>
+                                            <option>Критичный</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-custom" onclick="createTask()">
+                                            <i class="bi bi-send"></i> Отправить в офис
+                                        </button>
+                                        <button class="btn btn-outline-secondary" id="editTemplateBtn" style="display:none;">
+                                            <i class="bi bi-pencil"></i> Отредактировать шаблон
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Мои задания -->
+                            <div class="col-md-6">
+                                <div class="form-section">
+                                    <h4><i class="bi bi-list-check"></i> Мои задания</h4>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Название</th>
+                                                    <th>Статус</th>
+                                                    <th>Дата</th>
+                                                    <th>Действия</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>#245</td>
+                                                    <td>Ремонт холодильника</td>
+                                                    <td><span class="status-badge status-new">новый</span></td>
+                                                    <td>12.05.2023</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-custom" onclick="sendTask(245)">Отправить</button>
+                                                        <button class="btn btn-sm btn-outline-danger" onclick="cancelTask(245)">Отменить</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>#242</td>
+                                                    <td>Уборка помещения</td>
+                                                    <td><span class="status-badge status-inwork">в работе</span></td>
+                                                    <td>09.05.2023</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-danger" onclick="cancelTask(242)">Отменить</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>#240</td>
+                                                    <td>Замена ламп</td>
+                                                    <td><span class="status-badge status-canceled">отменён</span></td>
+                                                    <td>05.05.2023</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-secondary" disabled>Заблокировано</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Модальное окно отмены -->
+                                <div class="form-section">
+                                    <div class="alert alert-info">
+                                        <h5><i class="bi bi-info-circle"></i> Правила отмены</h5>
+                                        <p>Отменить можно только задания со статусом "новый" или "в работе". После отмены задание получит статус "отменён" и исключается из обработки.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Вкладка Специалист HR -->
+                    <div class="tab-pane fade" id="hr" role="tabpanel">
+                        <div class="row">
+                            <!-- Заявки на подбор -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <i class="bi bi-inboxes"></i> Заявки на подбор
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="list-group">
+                                            <div class="list-group-item">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1">Требуется сантехник</h6>
+                                                    <small class="text-muted">2 часа назад</small>
+                                                </div>
+                                                <p class="mb-1">От: Управляющий офисом (Центральный офис)</p>
+                                                <small>Срочно требуется сантехник для работы на постоянной основе.</small>
+                                                <div class="mt-2">
+                                                    <button class="btn btn-sm btn-custom">Взять в работу</button>
+                                                </div>
+                                            </div>
+                                            <div class="list-group-item">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1">Требуется электрик</h6>
+                                                    <small class="text-muted">1 день назад</small>
+                                                </div>
+                                                <p class="mb-1">От: Управляющий офисом (Северный регион)</p>
+                                                <small>Нужен электрик с допуском до 1000В.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Задания для закрытия -->
+                                <div class="card mt-4">
+                                    <div class="card-header">
+                                        <i class="bi bi-check-circle"></i> Задания для закрытия
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-success">
+                                            <strong>Задание #243 - Замена проводки</strong><br>
+                                            Статус: <span class="status-badge status-done">выполнен</span><br>
+                                            <button class="btn btn-custom btn-sm mt-2" onclick="closeTask(243)">
+                                                <i class="bi bi-check-lg"></i> Закрыть задание
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Добавление специалиста -->
+                            <div class="col-md-6">
+                                <div class="form-section">
+                                    <h4><i class="bi bi-person-plus"></i> Добавление специалиста</h4>
+                                    <div class="mb-3">
+                                        <label class="form-label">ФИО</label>
+                                        <input type="text" class="form-control" placeholder="Иванов Иван Иванович">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Специализация</label>
+                                        <select class="form-select">
+                                            <option selected>Выберите специализацию</option>
+                                            <option>Электрик</option>
+                                            <option>Сантехник</option>
+                                            <option>Мастер HVAC</option>
+                                            <option>Уборщик</option>
+                                            <option>Слесарь</option>
+                                            <option>Сварщик</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Контакты</label>
+                                        <input type="text" class="form-control" placeholder="Телефон, email, телеграм">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Опыт работы (лет)</label>
+                                        <input type="number" class="form-control" min="0" max="50" value="3">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Рейтинг (от 1 до 5)</label>
+                                        <input type="number" class="form-control" min="1" max="5" step="0.1" value="4.0">
+                                    </div>
+                                    <div class="d-grid">
+                                        <button class="btn btn-custom" onclick="addSpecialist()">
+                                            <i class="bi bi-save"></i> Сохранить в базу
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- База специалистов -->
+                                <div class="form-section mt-4">
+                                    <h5><i class="bi bi-database"></i> База специалистов</h5>
+                                    <input type="text" class="form-control mb-3" placeholder="Поиск по ФИО или специализации...">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>ФИО</th>
+                                                    <th>Специализация</th>
+                                                    <th>Контакты</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Иванов А.С.</td>
+                                                    <td>Электрик</td>
+                                                    <td>+7 999 123-45-67</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Петров В.И.</td>
+                                                    <td>Сантехник</td>
+                                                    <td>+7 999 765-43-21</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Сидорова М.К.</td>
+                                                    <td>Мастер HVAC</td>
+                                                    <td>+7 999 555-33-11</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно заявки на подбор -->
+    <div class="modal fade" id="recruitmentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-person-badge"></i> Заявка на подбор</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Требуемая специализация</label>
+                        <select class="form-select">
+                            <option selected>Выберите специализацию</option>
+                            <option>Электрик</option>
+                            <option>Сантехник</option>
+                            <option>Мастер HVAC</option>
+                            <option>Уборщик</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Количество человек</label>
+                        <input type="number" class="form-control" min="1" value="1">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Требуемый опыт (лет)</label>
+                        <input type="number" class="form-control" min="0" value="2">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Срок подбора</label>
+                        <select class="form-select">
+                            <option>Срочно (3 дня)</option>
+                            <option selected>Стандартно (1 неделя)</option>
+                            <option>Не срочно (2 недели)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Комментарий</label>
+                        <textarea class="form-control" rows="3" placeholder="Дополнительные требования, условия работы и т.д."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-custom" data-bs-dismiss="modal">Отправить заявку</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Функции для работы с заданиями
+        function selectTemplate(templateName) {
+            document.getElementById('taskTitle').value = templateName;
+            document.getElementById('taskDescription').value = 'Стандартное описание для шаблона: ' + templateName;
+            document.getElementById('editTemplateBtn').style.display = 'block';
+        }
+
+        function createTask() {
+            const title = document.getElementById('taskTitle').value;
+            const description = document.getElementById('taskDescription').value;
+            
+            if (!title || !description) {
+                alert('Заполните все обязательные поля!');
+                return;
+            }
+            
+            alert('Задание "' + title + '" создано и отправлено в офис!');
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDescription').value = '';
+            document.getElementById('editTemplateBtn').style.display = 'none';
+        }
+
+        function sendTask(taskId) {
+            if (confirm('Отправить задание #' + taskId + ' в центральный офис?')) {
+                alert('Задание #' + taskId + ' отправлено! Статус изменён на "в работе".');
+            }
+        }
+
+        function cancelTask(taskId) {
+            if (confirm('Вы уверены, что хотите отменить задание #' + taskId + '?')) {
+                alert('Задание #' + taskId + ' отменено. Статус изменён на "отменён".');
+            }
+        }
+
+        function closeTask(taskId) {
+            if (confirm('Закрыть задание #' + taskId + '?')) {
+                alert('Задание #' + taskId + ' закрыто. Убрано из списка активных задач.');
+            }
+        }
+
+        function addSpecialist() {
+            alert('Новый специалист добавлен в базу!');
+        }
+
+        // Обновление уведомлений
+        document.getElementById('office-tab').addEventListener('click', function() {
+            const badge = this.querySelector('.notification-badge');
+            if (badge) {
+                badge.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
